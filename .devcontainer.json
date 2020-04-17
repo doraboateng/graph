@@ -6,6 +6,11 @@
   },
   "containerEnv": {},
   "dockerFile": "Dockerfile",
-  "extensions": [],
-  "settings": {}
+  "extensions": [
+    "prisma.vscode-graphql",
+  ],
+  "mounts": [
+    "type=bind,source=${localWorkspaceFolder},target=/go/src/github.com/kwcay/boateng-graph-service",
+  ],
+  "settings": {},
 }

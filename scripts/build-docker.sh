@@ -7,7 +7,7 @@ set -e
 
 VERSION=$1
 DOCKER_REPO="doraboateng/graph-service"
-USAGE="Usage: ./run VERSION BUILD_STAGE"
+USAGE="Usage: ./run [VERSION | dev]"
 
 if [ "$VERSION" = "" ]; then
     VERSION=$(date "+%y.%m.0")
@@ -23,7 +23,7 @@ TAGGED_IMAGE="$DOCKER_REPO:$VERSION"
 LATEST_IMAGE="$DOCKER_REPO:latest"
 
 echo ""
-echo "Building $TAGGED_IMAGE. Continue? (yes/[no])"
+echo "Building \"$TAGGED_IMAGE\". Continue? (yes/[no])"
 read -r CONFIRMATION
 
 if [ "$CONFIRMATION" != "yes" ]; then
@@ -34,7 +34,14 @@ if image_exists "$TAGGED_IMAGE"; then
     docker image rm --force "$TAGGED_IMAGE"
 fi
 
+if [ "$VERSION" = "dev" ]; then
+    docker build --tag "$TAGGED_IMAGE" --target dev .
+    exit 0
+fi
+
 docker build --tag "$TAGGED_IMAGE" --target dist .
+
+if 
 
 echo ""
 echo "Update \"latest\" tag for \"$DOCKER_REPO\" (\"$LATEST_IMAGE\")? (yes/[no])"

@@ -5,7 +5,7 @@ ARG GO_VERSION=1.14.2
 FROM golang:${GO_VERSION}-alpine AS dev
 
 ARG DGRAPH_VERSION
-RUN apk add --no-cache gcc git htop make vim && \
+RUN apk add --no-cache curl gcc git htop make vim && \
     git clone https://github.com/dgraph-io/dgraph.git /go/src/dgraph && \
         cd /go/src/dgraph && \
         git checkout v${DGRAPH_VERSION} --quiet && \
@@ -15,8 +15,8 @@ RUN apk add --no-cache gcc git htop make vim && \
     go get -u -v github.com/cosmtrek/air && \
     go clean -cache -modcache
 
-ADD . /graph-service
-WORKDIR /graph-service/src
+ADD . /go/src/github.com/kwcay/boateng-graph-service
+WORKDIR /go/src/github.com/kwcay/boateng-graph-service
 
 # Build stage.
 FROM dev as build

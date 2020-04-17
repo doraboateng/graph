@@ -3,6 +3,7 @@
 .vscode/
 docs/
 scripts/
+tmp/
 
 .devcontainer.json
 .env
