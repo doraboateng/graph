@@ -1,0 +1,11 @@
+{
+  "name": "boateng-graph-service-dev-container",
+  "build": {
+    "args": {},
+    "target": "dev",
+  },
+  "containerEnv": {},
+  "dockerFile": "Dockerfile",
+  "extensions": [],
+  "settings": {}
+}

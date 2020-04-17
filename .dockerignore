@@ -1,0 +1,12 @@
+.git/
+.github/
+.vscode/
+docs/
+scripts/
+
+.devcontainer.json
+.env
+.gitignore
+LICENSE
+*.md
+run
