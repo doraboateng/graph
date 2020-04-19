@@ -7,10 +7,14 @@
   "containerEnv": {},
   "dockerFile": "Dockerfile",
   "extensions": [
+    "ms-vscode.go",
     "prisma.vscode-graphql",
+    "visualstudioexptteam.vscodeintellicode",
   ],
   "mounts": [
     "type=bind,source=${localWorkspaceFolder},target=/go/src/github.com/kwcay/boateng-graph-service",
   ],
-  "settings": {},
+  "settings": {
+    "go.gopath": "/go",
+  },
 }

@@ -1,0 +1,10 @@
+
+type Query {
+  alphabets: [Alphabet!]!
+  expressions: [Expression!]!
+  languages: [Language!]!
+}
+
+# type Mutation {
+#   createTodo(input: NewTodo!): Todo!
+# }

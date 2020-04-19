@@ -14,13 +14,11 @@ var gitHash string
 
 func main() {
 	router := router.Create()
+	port := os.Getenv("APP_PORT")
 
-	port := "80"
-	// port := os.Getenv("APP_PORT")
-
-	// if port == "" {
-	// 	port = "80"
-	// }
+	if port == "" {
+		port = "80"
+	}
 
 	// Launch server
 	log.Println("Environment: " + os.Getenv("APP_ENV"))

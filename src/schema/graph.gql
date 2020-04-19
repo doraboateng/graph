@@ -1,0 +1,118 @@
+enum ExpressionType {
+  Expression
+  Phrase
+  Proverb
+  Word
+}
+
+enum StoryType {
+  Poem
+  Song
+  Story
+}
+
+enum NounType {
+  Name
+  Place
+  Person
+}
+
+enum PartOfSpeech {
+  Adjective
+  Adverb # Includes connectives such as "likewise".
+  Conjunction
+  Interjection # Includes exclamations such as "oh!"
+  Noun
+  Preposition
+  Pronoun
+  Verb
+
+  Prefix
+  Suffix
+}
+
+enum ReferenceType {
+  Article
+  Audio
+  Book
+  Encyclopedia
+  Film
+  Interview
+  Paper
+  Person
+  Report
+  SocialMedia
+  Song
+  Video
+  Website
+  Other
+}
+
+type Alphabet {
+  code: String!
+  name: String!
+  script: Script
+  characters: String
+  languages: [Language]
+  references: [Reference]
+}
+
+type Expression {
+  id: ID! # TODO...
+  type: ExpressionType!
+  titles: [Transliteration!]!
+  languages: [Language!]!
+  partOfSpeech: PartOfSpeech
+  nounType: NounType
+  lexeme: Expression # When the lexeme references itself, we have a lemma.
+  literalTranslation: String
+  practicalTranslation: String
+  meaning: String
+  tags: [Tag]
+  relatedExpressions: [Expression] # Synonyms, antonyms, compound words maybe
+  references: [Reference]
+}
+
+type Language {
+  code: String!
+  names: [Transliteration!]!
+  parent: Language
+  lexifier: Language
+  relatedLanguages: [Language]
+  glottologId: String
+  alphabets: [Alphabet]
+  isFamily: Boolean
+  references: [Reference]
+}
+
+type Reference {
+  type: ReferenceType!
+  mla: String
+}
+
+type Script {
+  code: String!
+  names: [Transliteration]
+}
+
+type Story {
+  type: StoryType!
+  lines: [StoryLine]!
+  language: Language
+  script: Script
+}
+
+type StoryLine {
+  story: Story!
+  content: String!
+}
+
+type Tag {
+  name: String!
+}
+
+type Transliteration {
+  value: String!
+  transliterationLangCode: String
+  transliterationScriptCode: String
+}
