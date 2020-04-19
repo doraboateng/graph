@@ -15,5 +15,5 @@ code .
 >TODO
 
 ```shell
-CGO_ENABLED=0 go run github.com/99designs/gqlgen generate
+go generate ./...
 ```

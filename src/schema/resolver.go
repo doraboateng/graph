@@ -1,5 +1,7 @@
 package schema
 
+//go:generate go run github.com/99designs/gqlgen
+
 import (
 	"context"
 
@@ -11,10 +13,10 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 // Resolver ...
-type Resolver struct{
-	alphabets []*generated.Alphabet
+type Resolver struct {
+	alphabets   []*generated.Alphabet
 	expressions []*generated.Expression
-	languages []*generated.Language
+	languages   []*generated.Language
 }
 
 func (resolver *queryResolver) Alphabets(ctx context.Context) ([]*generated.Alphabet, error) {

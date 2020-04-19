@@ -4,14 +4,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
-	"github.com/kwcay/boateng-graph-service/src/generated"
 	"github.com/kwcay/boateng-graph-service/src/handlers"
-	"github.com/kwcay/boateng-graph-service/src/schema"
 )
 
 // Create ...
@@ -43,9 +40,8 @@ func Create() *chi.Mux {
 		panic("test")
 	})
 
-	// TODO: GraphQL
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &schema.Resolver{}}))
-	router.Get("/", srv.ServeHTTP)
+	// GraphQL
+	router.Get("/", handlers.GraphHandler)
 
 	return router
 }
