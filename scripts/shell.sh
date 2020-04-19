@@ -20,6 +20,7 @@ fi
 docker run \
     --interactive \
     --mount type="bind,source=$(pwd),target=/go/src/github.com/kwcay/boateng-graph-service" \
+    --name boateng-graph-service \
     --publish "$(get_env APP_PORT):80" \
     --rm \
     --tty \
