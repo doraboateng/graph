@@ -5,6 +5,13 @@ set -e
 
 . scripts/utils.sh
 
+set -a
+. .env
+set +a
+
+IMAGE_NAME="doraboateng/graph-service:dev"
+CONTAINER_NAME="boateng-graph-service"
+
 # Check that Docker is installed.
 if [ ! -x "$(command -v docker)" ]; then
     echo "Could not find Docker in path." >&2
@@ -12,17 +19,33 @@ if [ ! -x "$(command -v docker)" ]; then
 fi
 
 # Check that Docker image is built.
-if ! image_exists "doraboateng/graph-service:dev"; then
+if ! image_exists "$IMAGE_NAME"; then
     echo "Please build Docker image first by running \"./run build-docker dev\"."
     exit 1
 fi
 
+RUNNING_CONTAINER_ID=$(docker container ls --filter name="$CONTAINER_NAME" --quiet)
+
+if [ "$RUNNING_CONTAINER_ID" != "" ]; then
+    docker exec --interactive --tty "$RUNNING_CONTAINER_ID" ash
+    exit 0
+fi
+
 docker run \
+    --env APP_ENV="$APP_ENV" \
+    --env DGRAPH_ZERO_PORT="$DGRAPH_ZERO_PORT" \
+    --env DGRAPH_ALPHA_PORT="$DGRAPH_ALPHA_PORT" \
+    --env DGRAPH_RATEL_PORT="$DGRAPH_RATEL_PORT" \
+    --env GRAPHIQL_PORT="$GRAPHIQL_PORT" \
     --interactive \
-    --mount type="bind,source=$(pwd),target=/go/src/github.com/kwcay/boateng-graph-service" \
-    --name boateng-graph-service \
-    --publish "$(get_env APP_PORT):80" \
+    --mount type="bind,source=$(pwd),target=/graph-service" \
+    --name "$CONTAINER_NAME" \
+    --publish "$APP_PORT:80" \
+    --publish "$DGRAPH_ZERO_PORT:6080" \
+    --publish "$DGRAPH_ALPHA_PORT:8080" \
+    --publish "$DGRAPH_RATEL_PORT:8000" \
+    --publish "$GRAPHIQL_PORT:$GRAPHIQL_PORT" \
     --rm \
     --tty \
-   doraboateng/graph-service:dev \
+   "$IMAGE_NAME" \
    ash

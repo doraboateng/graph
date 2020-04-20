@@ -1,10 +1,8 @@
 {
-  "name": "boateng-graph-service-dev-container",
   "build": {
     "args": {},
     "target": "dev",
   },
-  "containerEnv": {},
   "dockerFile": "Dockerfile",
   "extensions": [
     "ms-vscode.go",
@@ -12,9 +10,14 @@
     "visualstudioexptteam.vscodeintellicode",
   ],
   "mounts": [
-    "type=bind,source=${localWorkspaceFolder},target=/go/src/github.com/kwcay/boateng-graph-service",
+    "type=bind,source=${localWorkspaceFolder},target=/graph-service",
+  ],
+  "runArgs": [
+    "--name=dora-graph-service-dev-container",
   ],
   "settings": {
     "go.gopath": "/go",
   },
+
+  "name": "dora-graph-service-dev-container",
 }

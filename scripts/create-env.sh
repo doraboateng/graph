@@ -18,7 +18,7 @@ if [ ! -f ./.env ]; then
     {
         echo "# App"
         echo "APP_ENV=local"
-        echo "APP_PORT=8881"
+        echo "APP_PORT=8810"
 
         echo ""
         echo "# Credentials"
@@ -27,7 +27,11 @@ if [ ! -f ./.env ]; then
 
         echo ""
         echo "# Dgraph"
+        echo "DGRAPH_ZERO_HTTP_PORT=8819"
+        echo "DGRAPH_ALPHA_PORT=8818"
+        echo "DGRAPH_RATEL_PORT=8812"
+        echo "GRAPHIQL_PORT=8811"
     } >> ./.env
 
-    echo "Done!"
+    echo "Environment file created."
 fi

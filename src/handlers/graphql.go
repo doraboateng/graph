@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -9,12 +8,11 @@ import (
 	"github.com/kwcay/boateng-graph-service/src/schema"
 )
 
+// GraphHandler ...
 func GraphHandler(writer http.ResponseWriter, request *http.Request) {
 	srv := handler.NewDefaultServer(
-		generated.NewExecutableSchema(
-			generated.Config{Resolvers: &schema.Resolver{}}
-		)
+		generated.NewExecutableSchema(generated.Config{Resolvers: &schema.Resolver{}}),
 	)
-	
+
 	srv.ServeHTTP(writer, request)
 }

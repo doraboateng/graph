@@ -39,9 +39,7 @@ if [ "$VERSION" = "dev" ]; then
     exit 0
 fi
 
-docker build --tag "$TAGGED_IMAGE" --target dist .
-
-if 
+docker build --tag "$TAGGED_IMAGE" --target prod .
 
 echo ""
 echo "Update \"latest\" tag for \"$DOCKER_REPO\" (\"$LATEST_IMAGE\")? (yes/[no])"

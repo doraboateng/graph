@@ -1,24 +1,37 @@
 ARG DGRAPH_VERSION=20.03.0
 ARG GO_VERSION=1.14.2
 
-# Dev stage.
-FROM golang:${GO_VERSION}-alpine AS dev
+# Base image for building and developmemnt.
+FROM golang:${GO_VERSION}-buster AS base
 
 ARG DGRAPH_VERSION
-# TODO: https://github.com/microsoft/vscode-dev-containers/blob/master/containers/go/.devcontainer/Dockerfile
-RUN apk add --no-cache curl gcc git htop make vim \
-    # Install Dgraph
-    && git clone https://github.com/dgraph-io/dgraph.git /go/src/dgraph \
-    && cd /go/src/dgraph \
-    && git checkout v${DGRAPH_VERSION} --quiet \
-    && CGO_ENABLED=0 make install --jobs=4 \
-    && cd /go \
-    && rm -rf /go/src/dgraph \
-    # Install Air
-    && go get -v github.com/cosmtrek/air \
-    # Build and install Go tools
-    # https://github.com/microsoft/vscode-dev-containers/blob/master/containers/go/.devcontainer/Dockerfile
-    && mkdir -p /tmp/gotools \
+
+RUN apt-get update \
+    && apt-get upgrade --yes \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl https://get.dgraph.io -sSf | bash -s -- \
+        --accept-license \
+        --version="v${DGRAPH_VERSION}"
+
+ADD . /graph-service
+WORKDIR /graph-service
+
+# Development stage.
+FROM base AS dev
+
+RUN apt-get update \
+    && apt-get upgrade --yes \
+    && apt-get install --no-install-recommends --yes htop less vim \
+    && apt-get autoremove --yes \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN go get -v github.com/cosmtrek/air
+
+# Build and install Go tools
+# Reference: https://github.com/microsoft/vscode-dev-containers/blob/master/containers/go/.devcontainer/Dockerfile
+RUN mkdir -p /tmp/gotools \
     && cd /tmp/gotools \
     && GOPATH=/tmp/gotools GO111MODULE=on go get -v golang.org/x/tools/gopls@latest 2>&1 \
     && GOPATH=/tmp/gotools GO111MODULE=on go get -v \
@@ -52,27 +65,23 @@ RUN apk add --no-cache curl gcc git htop make vim \
     && curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b /usr/local/bin 2>&1 \
     && go clean -cache -modcache
 
-ADD . /graph-service
-WORKDIR /graph-service
-ENV CGO_ENABLED=0
-ENV GO111MODULE=on
-
 # Build stage.
-FROM dev as build
+FROM base as build
 
 ARG BUILD_VERSION
 ARG GIT_HASH
 ARG BUILD_NAME
+WORKDIR /graph-service/src
 RUN CGO_ENABLED=0 GOOS=linux go build \
         -ldflags "-X main.version=${BUILD_VERSION} -X main.gitHash=${GIT_HASH}" \
         -o /tmp/${BUILD_NAME}
 RUN chmod +x /tmp/${BUILD_NAME}
 
 # Production stage.
-FROM scratch AS dist
+FROM scratch AS prod
 
 ARG BUILD_NAME
-COPY --from=build /go/bin/dgraph /usr/local/bin/dgraph
+COPY --from=build /usr/local/bin/dgraph /usr/local/bin/dgraph
 COPY --from=build /tmp/${BUILD_NAME} /usr/local/bin/graph-service
 
 EXPOSE ${APP_PORT}
