@@ -37,7 +37,7 @@
 # Run Dgraph services
 dgraph zero --cwd /dgraph &
 dgraph alpha --cwd /dgraph --lru_mb 1024 &
-# dgraph-ratel
+dgraph-ratel &
 
 # TODO: redirect terminal output to log?
 

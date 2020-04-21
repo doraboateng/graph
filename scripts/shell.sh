@@ -27,7 +27,7 @@ fi
 RUNNING_CONTAINER_ID=$(docker container ls --filter name="$CONTAINER_NAME" --quiet)
 
 if [ "$RUNNING_CONTAINER_ID" != "" ]; then
-    docker exec --interactive --tty "$RUNNING_CONTAINER_ID" ash
+    docker exec --interactive --tty "$RUNNING_CONTAINER_ID" bash
     exit 0
 fi
 
@@ -48,4 +48,4 @@ docker run \
     --rm \
     --tty \
    "$IMAGE_NAME" \
-   ash
+   bash
