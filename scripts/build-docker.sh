@@ -7,7 +7,7 @@ set -e
 
 VERSION=$1
 DOCKER_REPO="doraboateng/graph-service"
-USAGE="Usage: ./run [VERSION | dev]"
+USAGE="Usage: ./run [VERSION]"
 
 if [ "$VERSION" = "" ]; then
     VERSION=$(date "+%y.%m.0")
@@ -32,11 +32,6 @@ fi
 
 if image_exists "$TAGGED_IMAGE"; then
     docker image rm --force "$TAGGED_IMAGE"
-fi
-
-if [ "$VERSION" = "dev" ]; then
-    docker build --tag "$TAGGED_IMAGE" --target dev .
-    exit 0
 fi
 
 docker build --tag "$TAGGED_IMAGE" --target prod .

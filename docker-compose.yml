@@ -1,0 +1,55 @@
+# Reference: https://github.com/dgraph-io/dgraph/blob/master/dgraph/docker-compose.yml
+version: "3.7"
+services:
+  api:
+    image: doraboateng/graph-service:dev
+    build:
+      context: "."
+      target: dev
+    command: air
+    container_name: boateng-graph-service-api
+    depends_on:
+      - zero
+      - alpha
+    env_file: .env
+    ports:
+      - "8810:80"
+    volumes:
+      - .:/graph-service
+
+  alpha:
+    image: dgraph/dgraph:v20.03.0
+    command: >-
+        dgraph alpha
+            --block_rate 10
+            --expose_trace
+            --logtostderr
+            --lru_mb=1024
+            --my=alpha:7080
+            --profile_mode block
+            --trace 1.0
+            -v=2
+            --zero=zero:5080
+    container_name: boateng-graph-service-alpha
+    depends_on:
+      - zero
+    ports:
+      - 8817:8080
+      - 8818:9080
+    working_dir: /data/alpha
+
+  zero:
+    image: dgraph/dgraph:v20.03.0
+    command: >-
+        dgraph zero
+            --bindall
+            --block_rate 10
+            --expose_trace
+            --logtostderr
+            --my=zero:5080
+            --profile_mode block
+            -v=2
+    container_name: boateng-graph-service-zero
+    ports:
+      - "8819:6080"
+    working_dir: /data/zero
