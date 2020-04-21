@@ -9,6 +9,7 @@
     - [Requirements](#requirements)
     - [Published Ports](#published-ports)
     - [Running the Graph Service locally](#running-the-graph-service-locally)
+    - [Log output from the containers](#log-output-from-the-containers)
 - [Reporting Bugs](#reporting-bugs)
 - [Reporting Security Issues](#reporting-security-issues)
 - [Contributing](https://github.com/kwcay/boateng-graph-service/blob/stable/docs/contributing.md)
@@ -57,7 +58,7 @@ Port numbers published to your host machine.
 ## Running the Graph Service locally
 
 ```shell
-docker-compose up
+docker-compose up --detach
 ```
 
 When running for the first time, you might get this message:
@@ -69,6 +70,23 @@ Continue with the new image? [yN]
 ```
 
 In which case you can go ahead and type `y` and continue.
+
+To stop the Graph Service:
+
+```shell
+docker-compose down
+```
+
+## Log output from the containers
+
+```shell
+docker-compose logs
+docker-compose logs api
+docker-compose logs api alpha
+docker-compose logs --tail 5 api
+docker-compose logs --follow api
+docker-compose logs --follow api alpha zero
+```
 
 # Reporting Bugs
 

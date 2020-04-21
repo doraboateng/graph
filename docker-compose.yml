@@ -36,6 +36,8 @@ services:
     ports:
       - 8817:8080
       - 8818:9080
+    volumes:
+      - ./data/dgraph/alpha:/data/alpha
     working_dir: /data/alpha
 
   zero:
@@ -52,4 +54,6 @@ services:
     container_name: boateng-graph-service-zero
     ports:
       - "8819:6080"
+    volumes:
+      - ./data/dgraph/zero:/data/zero
     working_dir: /data/zero

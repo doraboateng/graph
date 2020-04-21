@@ -16,21 +16,9 @@ if [ ! -f ./.env ]; then
     read -r DOCKER_HUB_TOKEN
 
     {
-        echo "# App"
-        echo "APP_ENV=local"
-        echo "APP_PORT=8810"
-
-        echo ""
         echo "# Credentials"
         echo "DOCKER_HUB_USERNAME=$DOCKER_HUB_USERNAME"
         echo "DOCKER_HUB_TOKEN=$DOCKER_HUB_TOKEN"
-
-        echo ""
-        echo "# Dgraph"
-        echo "DGRAPH_ZERO_HTTP_PORT=8819"
-        echo "DGRAPH_ALPHA_PORT=8818"
-        echo "DGRAPH_RATEL_PORT=8812"
-        echo "GRAPHIQL_PORT=8811"
     } >> ./.env
 
     echo "Environment file created."
