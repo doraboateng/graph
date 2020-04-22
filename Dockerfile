@@ -1,31 +1,15 @@
-ARG DGRAPH_VERSION=20.03.0
 ARG GO_VERSION=1.14.2
 
 # Base image for building and developmemnt.
-FROM golang:${GO_VERSION}-buster AS base
+FROM golang:${GO_VERSION}-alpine AS base
 
-ARG DGRAPH_VERSION
-
-RUN apt-get update \
-    && apt-get upgrade --yes \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN curl https://get.dgraph.io -sSf | bash -s -- \
-        --accept-license \
-        --version="v${DGRAPH_VERSION}"
+RUN apk update && apk add --no-cache curl gcc git htop make vim
 
 ADD . /graph-service
 WORKDIR /graph-service
 
 # Development stage.
 FROM base AS dev
-
-RUN apt-get update \
-    && apt-get upgrade --yes \
-    && apt-get install --no-install-recommends --yes htop less vim \
-    && apt-get autoremove --yes \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
 
 RUN go get -v github.com/cosmtrek/air
 
@@ -81,8 +65,6 @@ RUN chmod +x /tmp/${BUILD_NAME}
 FROM scratch AS prod
 
 ARG BUILD_NAME
-COPY --from=build /usr/local/bin/dgraph /usr/local/bin/dgraph
 COPY --from=build /tmp/${BUILD_NAME} /usr/local/bin/graph-service
 
-EXPOSE ${APP_PORT}
 ENTRYPOINT ["/usr/local/bin/graph-service"]
