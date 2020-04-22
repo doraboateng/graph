@@ -13,7 +13,7 @@ services:
       - alpha
     env_file: .env
     ports:
-      - "8810:80"
+      - "8810:8810"
     volumes:
       - .:/graph-service
 
@@ -35,7 +35,7 @@ services:
       - zero
     ports:
       - 8817:8080
-      - 8818:9080
+      - 8818:7080
     volumes:
       - ./data/dgraph/alpha:/data/alpha
     working_dir: /data/alpha
