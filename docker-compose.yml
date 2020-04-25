@@ -1,5 +1,5 @@
 # Reference: https://github.com/dgraph-io/dgraph/blob/master/dgraph/docker-compose.yml
-version: "3.7"
+version: "3.4"
 services:
 
   # Graph API
