@@ -1,17 +1,25 @@
 ARG GO_VERSION=1.14.2
 
 # Base image for building and developmemnt.
-FROM golang:${GO_VERSION}-alpine AS base
+FROM golang:${GO_VERSION}-buster AS base
 
-RUN apk update && apk add --no-cache curl gcc git htop make vim
-
-ENV CGO_ENABLED=0
+RUN apt-get update \
+    && apt-get upgrade --yes \
+    && rm -rf /var/lib/apt/lists/*
 
 ADD . /graph-service
 WORKDIR /graph-service
 
 # Development stage.
 FROM base AS dev
+
+# TODO: after installing packages, remove unused ones.
+RUN apt-get update \
+    && apt-get upgrade --yes \
+    && apt-get install --no-install-recommends --yes htop less vim \
+    && apt-get autoremove --yes \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN go get -v github.com/cosmtrek/air
 
@@ -58,12 +66,14 @@ ARG BUILD_VERSION
 ARG GIT_HASH
 ARG BUILD_NAME
 WORKDIR /graph-service/src
-RUN GOOS=linux go build \
+RUN CGO_ENABLED=0 GOOS=linux go build \
         -ldflags "-X main.version=${BUILD_VERSION} -X main.gitHash=${GIT_HASH}" \
         -o /tmp/${BUILD_NAME}
 RUN chmod +x /tmp/${BUILD_NAME}
 
 # Production stage.
+# TODO: should we be using Alpine (alpine:3.9.6) or Distroless
+# (gcr.io/distroless/static) instead?
 FROM scratch AS prod
 
 ARG BUILD_NAME
