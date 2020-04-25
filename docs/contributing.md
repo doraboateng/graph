@@ -12,8 +12,10 @@ code .
 
 # Updating the schema
 
->TODO
+1. Update the schema file in question.
+2. Run `go generate`:
 
 ```shell
+./run shell
 go generate ./...
 ```

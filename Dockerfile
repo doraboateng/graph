@@ -5,6 +5,8 @@ FROM golang:${GO_VERSION}-alpine AS base
 
 RUN apk update && apk add --no-cache curl gcc git htop make vim
 
+ENV CGO_ENABLED=0
+
 ADD . /graph-service
 WORKDIR /graph-service
 
@@ -56,7 +58,7 @@ ARG BUILD_VERSION
 ARG GIT_HASH
 ARG BUILD_NAME
 WORKDIR /graph-service/src
-RUN CGO_ENABLED=0 GOOS=linux go build \
+RUN GOOS=linux go build \
         -ldflags "-X main.version=${BUILD_VERSION} -X main.gitHash=${GIT_HASH}" \
         -o /tmp/${BUILD_NAME}
 RUN chmod +x /tmp/${BUILD_NAME}

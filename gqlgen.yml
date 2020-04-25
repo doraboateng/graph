@@ -7,9 +7,9 @@ model:
   filename: src/generated/models.go
   package: generated
 resolver:
-  layout: follow-schema
-  dir: src/schema
-  package: schema
+  filename: src/resolvers/resolver.go
+  package: resolvers
+  type: Resolver
 
 # Optional: turn on use `gqlgen:"fieldName"` tags in your models
 # struct_tag: json

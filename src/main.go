@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/kwcay/boateng-graph-service/src/dgraph"
 	"github.com/kwcay/boateng-graph-service/src/router"
 )
 
@@ -14,10 +13,6 @@ var version string
 var gitHash string
 
 func main() {
-	// Setup Dgraph client.
-	_, closeClient := dgraph.GetClient()
-	defer closeClient()
-
 	// Setup router
 	router := router.Create()
 	port := os.Getenv("API_PORT")

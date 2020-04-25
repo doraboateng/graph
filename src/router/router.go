@@ -8,7 +8,6 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
-	"github.com/kwcay/boateng-graph-service/src/handlers"
 )
 
 // Create ...
@@ -32,7 +31,7 @@ func Create() *chi.Mux {
 	router.Use(middleware.Timeout(60 * time.Second))
 
 	// Informational routes
-	router.Get("/health", handlers.GetHealth)
+	router.Get("/health", GetHealth)
 	router.Get("/ping", func(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte("pong"))
 	})
@@ -41,7 +40,8 @@ func Create() *chi.Mux {
 	})
 
 	// GraphQL
-	router.Get("/", handlers.GraphHandler)
+	router.Post("/", GraphHandler)
+	router.Post("/refresh-schema", RefreshSchemaHandler)
 
 	return router
 }

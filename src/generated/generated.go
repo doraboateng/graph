@@ -81,6 +81,7 @@ type ComplexityRoot struct {
 	Query struct {
 		Alphabets   func(childComplexity int) int
 		Expressions func(childComplexity int) int
+		Language    func(childComplexity int, code string) int
 		Languages   func(childComplexity int) int
 	}
 
@@ -121,6 +122,7 @@ type QueryResolver interface {
 	Alphabets(ctx context.Context) ([]*Alphabet, error)
 	Expressions(ctx context.Context) ([]*Expression, error)
 	Languages(ctx context.Context) ([]*Language, error)
+	Language(ctx context.Context, code string) (*Language, error)
 }
 
 type executableSchema struct {
@@ -347,6 +349,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Expressions(childComplexity), true
+
+	case "Query.language":
+		if e.complexity.Query.Language == nil {
+			break
+		}
+
+		args, err := ec.field_Query_language_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Language(childComplexity, args["code"].(string)), true
 
 	case "Query.languages":
 		if e.complexity.Query.Languages == nil {
@@ -622,11 +636,14 @@ type Transliteration {
   transliterationScriptCode: String
 }
 `, BuiltIn: false},
-	&ast.Source{Name: "src/schema/requests.gql", Input: `
+	&ast.Source{Name: "src/schema/query.gql", Input: `
 type Query {
   alphabets: [Alphabet!]!
+
   expressions: [Expression!]!
+
   languages: [Language!]!
+  language(code: String!): Language
 }
 
 # type Mutation {
@@ -651,6 +668,20 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_language_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["code"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["code"] = arg0
 	return args, nil
 }
 
@@ -1682,6 +1713,44 @@ func (ec *executionContext) _Query_languages(ctx context.Context, field graphql.
 	res := resTmp.([]*Language)
 	fc.Result = res
 	return ec.marshalNLanguage2ᚕᚖgithubᚗcomᚋkwcayᚋboatengᚑgraphᚑserviceᚋsrcᚋgeneratedᚐLanguageᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_language(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_language_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Language(rctx, args["code"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Language)
+	fc.Result = res
+	return ec.marshalOLanguage2ᚖgithubᚗcomᚋkwcayᚋboatengᚑgraphᚑserviceᚋsrcᚋgeneratedᚐLanguage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3475,6 +3544,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
+				return res
+			})
+		case "language":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_language(ctx, field)
 				return res
 			})
 		case "__type":

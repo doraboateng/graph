@@ -1,8 +1,11 @@
 
 type Query {
   alphabets: [Alphabet!]!
+
   expressions: [Expression!]!
+
   languages: [Language!]!
+  language(code: String!): Language
 }
 
 # type Mutation {

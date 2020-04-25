@@ -24,8 +24,6 @@ func GetClient() (*dgo.Dgraph, context.CancelFunc) {
 	alpha1 := api.NewDgraphClient(conn)
 	client := dgo.NewDgraphClient(alpha1)
 
-	loadSchema(client)
-
 	return client, func() {
 		if err := conn.Close(); err != nil {
 			log.Printf("Error while closing connection:%v", err)
@@ -33,7 +31,9 @@ func GetClient() (*dgo.Dgraph, context.CancelFunc) {
 	}
 }
 
-func loadSchema(client *dgo.Dgraph) {
+// LoadSchema ...
+// TODO: The schema should be embedded with the binary file and loaded statically.
+func LoadSchema(client *dgo.Dgraph) {
 	indicesByteStr, err := ioutil.ReadFile("./src/schema/indices.dgraph")
 	if err != nil {
 		log.Fatal(err)
@@ -44,20 +44,20 @@ func loadSchema(client *dgo.Dgraph) {
 		log.Fatal(err)
 	}
 
-	err = client.Alter(context.Background(), &api.Operation{
-		RunInBackground: true,
-		Schema:          string(indicesByteStr),
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	_, err = http.Post(
 		"http://alpha:8080/admin/schema",
 		"text/plain",
 		bytes.NewBuffer(schemaByteStr),
 	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = client.Alter(context.Background(), &api.Operation{
+		RunInBackground: true,
+		Schema:          string(indicesByteStr),
+	})
 
 	if err != nil {
 		log.Fatal(err)

@@ -31,4 +31,4 @@ if [ "$RUNNING_CONTAINER_ID" = "" ]; then
     exit 1
 fi
 
-docker exec --interactive --tty "$RUNNING_CONTAINER_ID" bash
+docker exec --interactive --tty "$RUNNING_CONTAINER_ID" ash
