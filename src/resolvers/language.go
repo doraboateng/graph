@@ -3,7 +3,6 @@ package resolvers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"strings"
 
@@ -15,9 +14,9 @@ type languageResolver struct{ *Resolver }
 // Assert that todoResolver conforms to the generated.TodoResolver interface
 // var _ generated.LanguageResolver = (*languageResolver)(nil)
 
-func (resolver *queryResolver) Language(ctx context.Context, code string) (*generated.Language, error) {
-	txn := resolver.Dgraph.NewReadOnlyTxn()
-	defer txn.Discard(ctx)
+func (r *queryResolver) Language(ctx context.Context, code string) (*generated.Language, error) {
+	transaction := r.Dgraph.NewReadOnlyTxn()
+	defer transaction.Discard(ctx)
 
 	variables := make(map[string]string)
 	variables["$code"] = code
@@ -31,43 +30,42 @@ func (resolver *queryResolver) Language(ctx context.Context, code string) (*gene
 		}
 	`
 
-	res, err := txn.QueryWithVars(ctx, query, variables)
+	response, err := transaction.QueryWithVars(ctx, query, variables)
 
 	if err != nil {
-		log.Print(err)
 		return nil, err
 	}
 
 	// Convert Dgraph's JSON shape into the intended JSON shape so
 	// we can unmarshal it properly.
-	jsonResult := strings.ReplaceAll(string(res.Json), "Language.", "")
-	log.Printf("%s\n%s\n", res.Json, jsonResult)
+	responseJSON := strings.ReplaceAll(string(response.Json), "Language.", "")
 
-	type Root struct {
+	type ResponseObj struct {
 		Result []generated.Language `json:"result"`
 	}
 
-	var language *generated.Language
+	var responseObj ResponseObj
+	err = json.Unmarshal([]byte(responseJSON), &responseObj)
 
-	var root Root
-	err = json.Unmarshal([]byte(jsonResult), &root)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(root.Result) == 1 {
-		language = &root.Result[0]
+	var language *generated.Language
+
+	if len(responseObj.Result) == 1 {
+		language = &responseObj.Result[0]
 	}
 
 	return language, nil
 }
 
 // Languages ...
-func (resolver *queryResolver) Languages(ctx context.Context) ([]*generated.Language, error) {
-	txn := resolver.Dgraph.NewReadOnlyTxn()
-	defer txn.Discard(ctx)
+func (r *queryResolver) Languages(ctx context.Context) ([]*generated.Language, error) {
+	transaction := r.Dgraph.NewReadOnlyTxn()
+	defer transaction.Discard(ctx)
 
-	res, err := txn.Query(ctx, `{
+	response, err := transaction.Query(ctx, `{
 		result(func: type(Language)) {
 			<Language.code>
 		}
@@ -79,27 +77,23 @@ func (resolver *queryResolver) Languages(ctx context.Context) ([]*generated.Lang
 
 	// Convert Dgraph's JSON shape into the intended JSON shape so
 	// we can unmarshal it properly.
-	jsonResult := strings.ReplaceAll(string(res.Json), "Language.", "")
-	fmt.Printf("%s\n%s\n", res.Json, jsonResult)
+	responseJSON := strings.ReplaceAll(string(response.Json), "Language.", "")
 
-	type Root struct {
+	type ResponseObj struct {
 		Result []generated.Language `json:"result"`
 	}
 
-	var root Root
-	err = json.Unmarshal([]byte(jsonResult), &root)
+	var responseObj ResponseObj
+	err = json.Unmarshal([]byte(responseJSON), &responseObj)
+
 	if err != nil {
 		return nil, err
 	}
-	numLanguages := len(root.Result)
-
-	out, _ := json.MarshalIndent(root.Result, "", "\t")
-	fmt.Printf("%s\n", out)
 
 	var languages []*generated.Language
 
-	for i := 0; i < numLanguages; i++ {
-		languages = append(languages, &root.Result[i])
+	for i := 0; i < len(responseObj.Result); i++ {
+		languages = append(languages, &responseObj.Result[i])
 	}
 
 	return languages, nil
