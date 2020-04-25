@@ -6,13 +6,14 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/dgraph-io/dgo/v200"
 	"github.com/dgraph-io/dgo/v200/protos/api"
 	"google.golang.org/grpc"
 )
 
-// GetClient ...
+// GetClient connects to all Dgraph Alpha instances.
 func GetClient() (*dgo.Dgraph, context.CancelFunc) {
 	// Open gRPC connections to Dgraph Alpha nodes.
 	conn, err := grpc.Dial("alpha:9080", grpc.WithInsecure())
@@ -26,22 +27,23 @@ func GetClient() (*dgo.Dgraph, context.CancelFunc) {
 
 	return client, func() {
 		if err := conn.Close(); err != nil {
-			log.Printf("Error while closing connection:%v", err)
+			log.Printf("Error while closing Dgraph connection: %v", err)
 		}
 	}
 }
 
-// LoadSchema ...
-// TODO: The schema should be embedded with the binary file and loaded statically.
-func LoadSchema(client *dgo.Dgraph) {
-	indicesByteStr, err := ioutil.ReadFile("./src/schema/indices.dgraph")
+// LoadSchema updates the Dgraph schema and indices.
+func LoadSchema(client *dgo.Dgraph) error {
+	log.Println("Refreshing Graph schema...")
+
+	schemaByteStr, err := readFile("GRAPH_SCHEMA_PATH", "graph.gql")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	schemaByteStr, err := ioutil.ReadFile("./src/schema/graph.gql")
+	indicesByteStr, err := readFile("GRAPH_INDICES_PATH", "indices.dgraph")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	_, err = http.Post(
@@ -51,7 +53,7 @@ func LoadSchema(client *dgo.Dgraph) {
 	)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	err = client.Alter(context.Background(), &api.Operation{
@@ -60,6 +62,32 @@ func LoadSchema(client *dgo.Dgraph) {
 	})
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return err
+}
+
+// RefreshSchema ...
+func RefreshSchema() {
+	client, close := GetClient()
+	defer close()
+
+	LoadSchema(client)
+}
+
+func readFile(envKey string, filename string) ([]byte, error) {
+	filepath := "./src/schema/" + filename
+
+	if envFilePath, ok := os.LookupEnv(envKey); ok {
+		filepath = envFilePath
+	}
+
+	byteStr, err := ioutil.ReadFile(filepath)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return byteStr, nil
 }

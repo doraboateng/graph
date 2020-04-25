@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/kwcay/boateng-graph-service/src/dgraph"
 	"github.com/kwcay/boateng-graph-service/src/router"
 )
 
@@ -20,6 +21,9 @@ func main() {
 	if port == "" {
 		port = "80"
 	}
+
+	// Load Graph schema
+	dgraph.RefreshSchema()
 
 	// Launch server
 	log.Println("Environment: " + os.Getenv("API_ENV"))
