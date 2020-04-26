@@ -1,5 +1,8 @@
 language: go
 
+go:
+  - "1.14.2"
+
 before_script:
   # Notify Code Climate of impending test run.
   - curl --location
