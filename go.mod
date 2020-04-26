@@ -9,5 +9,5 @@ require (
 	github.com/go-chi/cors v1.1.1
 	github.com/go-chi/render v1.0.1
 	github.com/vektah/gqlparser/v2 v2.0.1
-	google.golang.org/grpc v1.29.0
+	google.golang.org/grpc v1.29.1
 )
