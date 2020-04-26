@@ -29,6 +29,6 @@ func main() {
 	log.Println("Environment: " + os.Getenv("API_ENV"))
 	log.Println("Version: " + version)
 	log.Println("Hash: " + gitHash)
-	log.Printf("Serving GraphQL at http://localhost:%s", port)
+	log.Printf("Serving Graph Service at http://localhost:%s", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
