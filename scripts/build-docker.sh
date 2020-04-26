@@ -43,9 +43,9 @@ docker build \
 
 echo ""
 echo "Update \"latest\" tag for \"$DOCKER_REPO\" (\"$LATEST_IMAGE\")? (yes/[no])"
-read -r CONFIRMATION
+read -r CONFIRM_TAG_LATEST
 
-if [ "$CONFIRMATION" = "yes" ]; then
+if [ "$CONFIRM_TAG_LATEST" = "yes" ]; then
     if image_exists "$LATEST_IMAGE"; then
         docker image rm --force "$LATEST_IMAGE"
     fi
@@ -61,6 +61,10 @@ if [ "$CONFIRMATION" = "yes" ]; then
     get_env DOCKER_HUB_TOKEN | docker login \
         --username "$(get_env DOCKER_HUB_USERNAME)" \
         --password-stdin
+
+    if [ "$CONFIRM_TAG_LATEST" = "yes" ]; then
+        docker push "$LATEST_IMAGE"
+    fi
 
     docker push "$TAGGED_IMAGE"
 fi
