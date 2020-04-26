@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/doraboateng/graph-service.svg?branch=stable)](https://travis-ci.com/doraboateng/graph-service)
-[![Maintainability](https://api.codeclimate.com/v1/badges/af6ea36778ba43f5fc1d/maintainability)](https://codeclimate.com/github/doraboateng/graph-service/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/af6ea36778ba43f5fc1d/test_coverage)](https://codeclimate.com/github/doraboateng/graph-service/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/0ed1a19e77a0d77976eb/maintainability)](https://codeclimate.com/github/kwcay/boateng-graph-service/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/0ed1a19e77a0d77976eb/test_coverage)](https://codeclimate.com/github/kwcay/boateng-graph-service/test_coverage)
 
 <details>
     <summary>Table of Contents</summary>

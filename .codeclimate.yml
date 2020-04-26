@@ -1,0 +1,23 @@
+version: 2
+
+checks:
+  file-lines:
+    enabled: false
+
+exclude_patterns:
+  - "src/generated/*.go"
+
+plugins:
+  gofmt:
+    enabled: true
+  golint:
+    enabled: true
+  govet:
+    enabled: true
+  markdownlint:
+    enabled: true
+  shellcheck:
+    enabled: true
+    checks:
+      SC1091:
+        enabled: false
