@@ -16,6 +16,11 @@ if [ ! -f ./.env ]; then
     read -r DOCKER_HUB_TOKEN
 
     {
+        echo "# API"
+        echo "API_ENV=local"
+        echo "API_PORT=8810"
+
+        echo ""
         echo "# Credentials"
         echo "DOCKER_HUB_USERNAME=$DOCKER_HUB_USERNAME"
         echo "DOCKER_HUB_TOKEN=$DOCKER_HUB_TOKEN"

@@ -34,13 +34,18 @@ if image_exists "$TAGGED_IMAGE"; then
     docker image rm --force "$TAGGED_IMAGE"
 fi
 
-docker build --tag "$TAGGED_IMAGE" --target prod .
+docker build \
+    --build-arg BUILD_VERSION="$VERSION" \
+    --force-rm \
+    --tag "$TAGGED_IMAGE" \
+    --target prod \
+    .
 
 echo ""
 echo "Update \"latest\" tag for \"$DOCKER_REPO\" (\"$LATEST_IMAGE\")? (yes/[no])"
-read -r CONFIRMATION
+read -r CONFIRM_TAG_LATEST
 
-if [ "$CONFIRMATION" = "yes" ]; then
+if [ "$CONFIRM_TAG_LATEST" = "yes" ]; then
     if image_exists "$LATEST_IMAGE"; then
         docker image rm --force "$LATEST_IMAGE"
     fi
@@ -52,15 +57,17 @@ echo ""
 echo "Publish build to Docker registry? (yes/[no])"
 read -r CONFIRMATION
 
-if [ "$CONFIRMATION" != "yes" ]; then
-    exit 0
+if [ "$CONFIRMATION" = "yes" ]; then
+    get_env DOCKER_HUB_TOKEN | docker login \
+        --username "$(get_env DOCKER_HUB_USERNAME)" \
+        --password-stdin
+
+    if [ "$CONFIRM_TAG_LATEST" = "yes" ]; then
+        docker push "$LATEST_IMAGE"
+    fi
+
+    docker push "$TAGGED_IMAGE"
 fi
-
-get_env DOCKER_HUB_TOKEN | docker login \
-    --username "$(get_env DOCKER_HUB_USERNAME)" \
-    --password-stdin
-
-docker push "$TAGGED_IMAGE"
 
 echo ""
 echo "Pruning Docker resources..."

@@ -10,7 +10,7 @@ import (
 func GetCorsOptions() cors.Options {
 	allowedOrigins := []string{"https://www.doraboateng.com"}
 
-	if os.Getenv("APP_ENV") == "local" {
+	if os.Getenv("API_ENV") == "local" {
 		allowedOrigins = []string{"http://localhost:*", "http://127.0.0.1:*", "http://0.0.0.0:*"}
 	}
 
@@ -21,6 +21,6 @@ func GetCorsOptions() cors.Options {
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
-		Debug:            os.Getenv("APP_ENV") == "local",
+		Debug:            os.Getenv("API_ENV") == "local",
 	}
 }

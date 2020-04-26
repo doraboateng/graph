@@ -7,23 +7,24 @@
 
 - [Local Setup](#local-setup)
     - [Requirements](#requirements)
-    - [Published Ports](#published-ports)
     - [Running the Graph Service locally](#running-the-graph-service-locally)
-    - [Log output from the containers](#log-output-from-the-containers)
+    - [Published Ports](#published-ports)
+    - [Viewing the log outputs from the services](#viewing-the-log-outputs-from-the-services)
 - [Reporting Bugs](#reporting-bugs)
 - [Reporting Security Issues](#reporting-security-issues)
 - [Contributing](https://github.com/kwcay/boateng-graph-service/blob/stable/docs/contributing.md)
 - [Deploying](https://github.com/kwcay/boateng-graph-service/blob/stable/docs/deploying.md)
+- [License](#license)
 
 </details>
 
-# Local Setup
+# Local setup
 
 ## Requirements
 
-- [Docker](https://www.docker.com)
+- [Docker](https://www.docker.com) & [Docker Compose](https://docs.docker.com/compose/install)
 - [Visual Studio Code](https://code.visualstudio.com)
-- POSIX-compliant terminal, such as:
+- A POSIX-compliant terminal, such as:
     - [Visual Studio Code terminal](https://code.visualstudio.com/docs/editor/integrated-terminal)
     - [cmder](https://cmder.net)
     - [Cygwin](https://www.cygwin.com)
@@ -31,29 +32,6 @@
     - [Zsh](https://www.zsh.org)
 
 If you're on Linux or Mac, you already have a POSIX-compliant terminal.
-
-## Running the Graph Service
-
-```shell
-docker-compose up
-
-# Load schema
-curl localhost:8080/admin/schema --data-binary "@src/schema/graph.gql"
-curl localhost:8080/alter --data-binary "@src/schema/indices.dgraph"
-```
-
-## Published Ports
-
-Port numbers published to your host machine.
-
-| Port | Service |
-| --- | --- |
-| 8810 | API |
-| 8811 | [GraphiQL (todo)](https://github.com/graphql/graphiql) |
-| 8812 | Dgraph Ratel |
-| 8817 | [Dgraph Alpha](https://dgraph.io/docs/deploy/#more-about-dgraph-alpha) HTTP port |
-| 8818 | [Dgraph Alpha](https://dgraph.io/docs/deploy/#more-about-dgraph-alpha) gRPC port |
-| 8819 | [Dgraph Zero](https://dgraph.io/docs/deploy/#more-about-dgraph-zero) |
 
 ## Running the Graph Service locally
 
@@ -77,16 +55,42 @@ To stop the Graph Service:
 docker-compose down
 ```
 
-## Log output from the containers
+## Published ports
+
+Port numbers published to your host machine.
+
+| Port | Service |
+| --- | --- |
+| 8810 | Graph API |
+| 8811 | [GraphiQL (todo)](https://github.com/graphql/graphiql) |
+| 8812 | Dgraph Ratel |
+| 8817 | [Dgraph Alpha](https://dgraph.io/docs/deploy/#more-about-dgraph-alpha) (HTTP) |
+| 8818 | [Dgraph Alpha](https://dgraph.io/docs/deploy/#more-about-dgraph-alpha) (gRPC) |
+| 8819 | [Dgraph Zero](https://dgraph.io/docs/deploy/#more-about-dgraph-zero) |
+
+## Viewing the log outputs from the services
 
 ```shell
+# Displaying all logs.
 docker-compose logs
+
+# Displaying logs for the API service.
 docker-compose logs api
+
+# Displaying logs for several services, e.g. API and Dgraph Alpha
 docker-compose logs api alpha
+
+# Tailing the last 5 lines of the logs from the API service.
 docker-compose logs --tail 5 api
+
+# Following the logs for the API service as they come in (CMD/CTRL+C to exit).
 docker-compose logs --follow api
+
+# Following the logs for several services as they come in, e.g. Dgraph Alpha and Dgraph Zero.
 docker-compose logs --follow api alpha zero
 ```
+
+For more details, see the [docs](https://docs.docker.com/compose/reference/logs) or run the command `docker-compose logs --help`
 
 # Reporting Bugs
 
@@ -98,4 +102,4 @@ docker-compose logs --follow api alpha zero
 
 # License
 
-Copyright © 2020 Kwahu & Cayes
+[GNU General Public License v3](https://github.com/kwcay/boateng-graph-service/blob/stable/LICENSE) © Kwahu & Cayes

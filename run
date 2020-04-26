@@ -14,6 +14,9 @@ elif [[ "$SCRIPT_NAME" == "help" ]]; then
     ls ./scripts
     printf "\n%s\n" "$HELP"
     exit 0
+elif [ "$SCRIPT_NAME" = "ratel" ]; then
+    echo "Dgraph Ratel: http://localhost:8812"
+    exit 0
 elif [[ "$SCRIPT_NAME" =~ .*\.sh ]]; then
     EXEC="./scripts/$SCRIPT_NAME"
 else

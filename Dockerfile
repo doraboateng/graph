@@ -1,18 +1,11 @@
-ARG DGRAPH_VERSION=20.03.0
 ARG GO_VERSION=1.14.2
 
 # Base image for building and developmemnt.
 FROM golang:${GO_VERSION}-buster AS base
 
-ARG DGRAPH_VERSION
-
 RUN apt-get update \
     && apt-get upgrade --yes \
     && rm -rf /var/lib/apt/lists/*
-
-RUN curl https://get.dgraph.io -sSf | bash -s -- \
-        --accept-license \
-        --version="v${DGRAPH_VERSION}"
 
 ADD . /graph-service
 WORKDIR /graph-service
@@ -23,6 +16,7 @@ FROM base AS dev
 RUN apt-get update \
     && apt-get upgrade --yes \
     && apt-get install --no-install-recommends --yes htop less vim \
+    && apt-get remove subversion --yes \
     && apt-get autoremove --yes \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -70,19 +64,26 @@ FROM base as build
 
 ARG BUILD_VERSION
 ARG GIT_HASH
-ARG BUILD_NAME
 WORKDIR /graph-service/src
 RUN CGO_ENABLED=0 GOOS=linux go build \
         -ldflags "-X main.version=${BUILD_VERSION} -X main.gitHash=${GIT_HASH}" \
-        -o /tmp/${BUILD_NAME}
-RUN chmod +x /tmp/${BUILD_NAME}
+        -o /tmp/graph-service
+RUN chmod +x /tmp/graph-service
 
 # Production stage.
+# TODO: should we be using Alpine (alpine:3.9.6) or Distroless
+# (gcr.io/distroless/static) instead?
 FROM scratch AS prod
 
-ARG BUILD_NAME
-COPY --from=build /usr/local/bin/dgraph /usr/local/bin/dgraph
-COPY --from=build /tmp/${BUILD_NAME} /usr/local/bin/graph-service
+ARG BUILD_VERSION
+ARG GIT_HASH
 
-EXPOSE ${APP_PORT}
+COPY --from=base /graph-service/src/schema/*.gql /opt/
+COPY --from=base /graph-service/src/schema/*.dgraph /opt/
+COPY --from=build /tmp/graph-service /usr/local/bin/graph-service
+
+ENV API_ENV=production
+ENV GRAPH_SCHEMA_PATH=/opt/graph.gql
+ENV GRAPH_INDICES_PATH=/opt/indices.dgraph
+
 ENTRYPOINT ["/usr/local/bin/graph-service"]
