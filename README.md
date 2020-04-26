@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/doraboateng/graph-service.svg?branch=stable)](https://travis-ci.com/doraboateng/graph-service)
+[![Build Status](https://travis-ci.com/kwcay/boateng-graph-service.svg?branch=stable)](https://travis-ci.com/kwcay/boateng-graph-service)
 [![Maintainability](https://api.codeclimate.com/v1/badges/0ed1a19e77a0d77976eb/maintainability)](https://codeclimate.com/github/kwcay/boateng-graph-service/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/0ed1a19e77a0d77976eb/test_coverage)](https://codeclimate.com/github/kwcay/boateng-graph-service/test_coverage)
 
