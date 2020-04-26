@@ -10,4 +10,5 @@ tmp/
 .gitignore
 LICENSE
 *.md
+*.out
 run

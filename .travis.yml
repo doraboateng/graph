@@ -1,0 +1,24 @@
+language: go
+
+before_script:
+  # Notify Code Climate of impending test run.
+  - curl --location
+      https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 >
+      $HOME/bin/code-climate
+  - chmod +x $HOME/bin/code-climate
+  - code-climate before-build
+
+script:
+  # Add coverage information to build log.
+  - go test -coverprofile c.out ./...
+
+after_script:
+  # Notify Code Climate of completed test run.
+  - code-climate after-build --exit-code $TRAVIS_TEST_RESULT
+
+notifications:
+  email: false
+
+git:
+  depth: 1
+  quiet: true
