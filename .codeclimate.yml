@@ -4,9 +4,6 @@ checks:
   file-lines:
     enabled: false
 
-exclude_patterns:
-  - "src/generated/*.go"
-
 plugins:
   gofmt:
     enabled: true
