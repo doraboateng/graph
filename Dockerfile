@@ -18,7 +18,7 @@ FROM gcr.io/distroless/base AS prod
 COPY --from=base /usr/local/bin/* /usr/local/bin/
 COPY --from=build /graph-src/* /
 
-ENTRYPOINT ["dgraph"]
+CMD ["dgraph"]
 
 # Development stage.
 FROM base AS dev
