@@ -7,21 +7,24 @@
 docker build --tag doraboateng/graph:dev --target dev .
 ```
 
-# Rebuilding Dgraph schema
+<details>
+    <summary>Rebuilding the schema</summary>
 
 ```shell
+# TODO ...
+
 ./run shell
 
 curl alpha:8080/alter -d '{ "drop_all": true }'
-curl alpha:8080/admin/schema --data-binary "@src/schema/graph.gql"
-curl alpha:8080/alter --data-binary "@src/schema/indices.dgraph"
+curl alpha:8080/admin/schema --data-binary "@schema/graph.gql"
+curl alpha:8080/alter --data-binary "@schema/indices.dgraph"
 ```
+</details>
 
-<details>
-    <summary><h1>Releasing a new version</h1></summary>
+# Releasing a new version
 
 - Make sure the `stable` branch contains all the latest working changes.
-- Create release on [Github](https://github.com/kwcay/boateng-graph/releases/new?target=stable) (using [calendar versioning](https://calver.org)).
+- Create release on [Github](https://github.com/kwcay/boateng-graph/releases/new?target=stable) using [calendar versioning](https://calver.org).
     - See [latest releases](https://github.com/kwcay/boateng-graph/releases) for guidance.
 - Publish the release to Docker Hub:
 
@@ -32,7 +35,6 @@ git checkout stable && git fetch --tags && git pull
 # Build and publish the release.
 ./run build-docker
 ```
-</details>
 
 # License
 
