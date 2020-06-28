@@ -3,24 +3,23 @@
 # Exit on error
 set -e
 
-. scripts/utils.sh
-
 VERSION=$1
-DOCKER_REPO="doraboateng/graph-service"
-USAGE="Usage: ./run [VERSION]"
+IMAGE_NAME="doraboateng/graph"
+USAGE="Usage: ./run build-docker [VERSION]"
 
 if [ "$VERSION" = "" ]; then
-    VERSION=$(date "+%y.%m.0")
+    VERSION=$(git describe --abbrev=0 --tags)
+    # VERSION=$(date "+%y.%m.0")
 fi
 
-if [ "$VERSION" = "help" ] || [ "$VERSION" = "-h" ] || [ "$VERSION" == "--help" ];
+if [ "$VERSION" = "help" ] || [ "$VERSION" = "-h" ] || [ "$VERSION" = "--help" ];
 then
     echo "$USAGE"
     exit 0
 fi
 
-TAGGED_IMAGE="$DOCKER_REPO:$VERSION"
-LATEST_IMAGE="$DOCKER_REPO:latest"
+TAGGED_IMAGE="$IMAGE_NAME:$VERSION"
+LATEST_IMAGE="$IMAGE_NAME:latest"
 
 echo ""
 echo "Building \"$TAGGED_IMAGE\". Continue? (yes/[no])"
@@ -30,23 +29,26 @@ if [ "$CONFIRMATION" != "yes" ]; then
     exit 0
 fi
 
-if image_exists "$TAGGED_IMAGE"; then
+EXISTING_IMAGE_ID=$(docker images --quiet "$TAGGED_IMAGE")
+if [ "$EXISTING_IMAGE_ID" != "" ]; then
     docker image rm --force "$TAGGED_IMAGE"
 fi
 
 docker build \
     --build-arg BUILD_VERSION="$VERSION" \
+    --build-arg GIT_HASH="$(git rev-parse --short HEAD)" \
     --force-rm \
     --tag "$TAGGED_IMAGE" \
     --target prod \
     .
 
 echo ""
-echo "Update \"latest\" tag for \"$DOCKER_REPO\" (\"$LATEST_IMAGE\")? (yes/[no])"
+echo "Update \"latest\" tag for \"$IMAGE_NAME\" (\"$LATEST_IMAGE\")? (yes/[no])"
 read -r CONFIRM_TAG_LATEST
 
 if [ "$CONFIRM_TAG_LATEST" = "yes" ]; then
-    if image_exists "$LATEST_IMAGE"; then
+    EXISTING_IMAGE_ID=$(docker images --quiet "$LATEST_IMAGE")
+    if [ "$EXISTING_IMAGE_ID" != "" ]; then
         docker image rm --force "$LATEST_IMAGE"
     fi
 
@@ -58,8 +60,10 @@ echo "Publish build to Docker registry? (yes/[no])"
 read -r CONFIRMATION
 
 if [ "$CONFIRMATION" = "yes" ]; then
-    get_env DOCKER_HUB_TOKEN | docker login \
-        --username "$(get_env DOCKER_HUB_USERNAME)" \
+    < ./.docker-hub-token \
+        docker \
+        login \
+        --username "$(cat ./.docker-hub-username)" \
         --password-stdin
 
     if [ "$CONFIRM_TAG_LATEST" = "yes" ]; then

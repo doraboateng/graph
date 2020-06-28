@@ -6,11 +6,15 @@
 *.dylib
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
+# Docker Hub
+.docker-hub-token
+.docker-hub-username
 
 # Environment files
 .env
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
 
 # Temporary and data files
 data/

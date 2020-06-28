@@ -1,12 +1,16 @@
 Alphabet.code: string @index(hash) @upsert .
 Alphabet.name: string @lang .
 
-Expression.literalTranslation: string @lang .
-Expression.practicalTranslation: string @lang .
-Expression.meaning: string @lang .
+Expression.uuid: string @index(hash) @upsert .
+Expression.literalTranslation: string @index(fulltext) @lang .
+Expression.practicalTranslation: string @index(fulltext) @lang .
+Expression.meaning: string @index(fulltext) @lang .
 
 Language.code: string @index(hash) @upsert .
 
 Script.code: string @index(hash) @upsert .
 
 Tag.name: string @lang .
+
+Transliteration.hash: string @index(hash) @upsert .
+Transliteration.value: string @index(fulltext) @upsert .
