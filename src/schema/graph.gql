@@ -49,7 +49,7 @@ enum ReferenceType {
 }
 
 type Alphabet {
-  code: String!
+  code: String! @search(by: [hash])
   name: String!
   script: Script
   characters: String
@@ -63,23 +63,23 @@ type Culture {
 }
 
 type Expression {
-  uuid: String! # RFC 4122 UUID as a 32-character hexadecimal string.
+  uuid: String! @search(by: [hash]) # RFC 4122 UUID as a 32-character hexadecimal string.
   type: ExpressionType!
   titles: [Transliteration!]!
   languages: [Language!]!
   partOfSpeech: PartOfSpeech
   nounType: NounType
   lexeme: Expression # When the lexeme references itself, we have a lemma.
-  literalTranslation: String
-  practicalTranslation: String
-  meaning: String
+  literalTranslation: String @search(by: [fulltext])
+  practicalTranslation: String @search(by: [fulltext])
+  meaning: String @search(by: [fulltext])
   tags: [Tag]
   relatedExpressions: [Expression] # Synonyms, antonyms, compound words maybe.
   references: [Reference]
 }
 
 type Language {
-  code: String!
+  code: String! @search(by: [hash])
   names: [Transliteration!]!
   parent: Language
   lexifier: Language # Basis language for a pidgin or creole.
@@ -96,7 +96,7 @@ type Reference {
 }
 
 type Script {
-  code: String!
+  code: String! @search(by: [hash])
   names: [Transliteration]
 }
 
@@ -117,8 +117,8 @@ type Tag {
 }
 
 type Transliteration {
-  hash: String
-  value: String!
+  hash: String @search(by: [hash])
+  value: String! @search(by: [fulltext])
   langCode: String
   scriptCode: String
 }
