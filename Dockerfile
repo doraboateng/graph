@@ -16,7 +16,8 @@ ADD ./src/* /graph-src/
 FROM gcr.io/distroless/base AS prod
 
 COPY --from=base /usr/local/bin/* /usr/local/bin/
-COPY --from=build /graph-src/* /
+# COPY --from=build /graph-src/bin/* /usr/local/bin/
+COPY --from=build /graph-src/schema /schema
 
 CMD ["dgraph"]
 
