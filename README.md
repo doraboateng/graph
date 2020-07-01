@@ -26,15 +26,8 @@ curl alpha:8080/alter --data-binary "@schema/indices.dgraph"
 - Make sure the `stable` branch contains all the latest working changes.
 - Create release on [Github](https://github.com/kwcay/boateng-graph/releases/new?target=stable) using [calendar versioning](https://calver.org) (e.g. v20.01.0).
     - See [latest releases](https://github.com/kwcay/boateng-graph/releases) for guidance.
-- Publish the release to Docker Hub:
 
-```shell
-# Retrieve latest tags from Github.
-git checkout stable && git fetch --tags && git pull
-
-# Build and publish the release.
-./run build-docker
-```
+A new release will be published to [Docker Hub](https://hub.docker.com/r/doraboateng/graph/tags?page=1).
 
 # License
 
