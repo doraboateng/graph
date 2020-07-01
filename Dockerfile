@@ -10,7 +10,7 @@ ARG BUILD_VERSION
 ARG GIT_HASH
 
 WORKDIR /graph-src
-ADD ./src/* /graph-src/
+ADD ./src /graph-src
 
 # Production stage.
 FROM gcr.io/distroless/base AS prod
