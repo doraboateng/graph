@@ -117,7 +117,7 @@ type Tag {
 }
 
 type Transliteration {
-  hash: String @id
+  hash: String! @id
   value: String! @search(by: [fulltext])
   langCode: String
   scriptCode: String
