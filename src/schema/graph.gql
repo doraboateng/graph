@@ -49,11 +49,11 @@ enum ReferenceType {
 }
 
 type Alphabet {
-  code: String! @search(by: [hash])
+  code: String! @id
   name: String!
   script: Script
   characters: String
-  languages: [Language]
+  # languages: [Language]
   references: [Reference]
 }
 
@@ -63,7 +63,7 @@ type Culture {
 }
 
 type Expression {
-  uuid: String! @search(by: [hash]) # RFC 4122 UUID as a 32-character hexadecimal string.
+  uuid: String! @id # RFC 4122 UUID as a 32-character hexadecimal string.
   type: ExpressionType!
   titles: [Transliteration!]!
   languages: [Language!]!
@@ -79,7 +79,7 @@ type Expression {
 }
 
 type Language {
-  code: String! @search(by: [hash])
+  code: String! @id
   names: [Transliteration!]!
   parent: Language
   lexifier: Language # Basis language for a pidgin or creole.
@@ -96,13 +96,13 @@ type Reference {
 }
 
 type Script {
-  code: String! @search(by: [hash])
+  code: String! @id
   names: [Transliteration]
 }
 
 type Story {
   type: StoryType!
-  lines: [StoryLine]!
+  lines: [StoryLine]! @hasInverse(field: story)
   language: Language
   script: Script
 }
@@ -117,7 +117,7 @@ type Tag {
 }
 
 type Transliteration {
-  hash: String @search(by: [hash])
+  hash: String @id
   value: String! @search(by: [fulltext])
   langCode: String
   scriptCode: String

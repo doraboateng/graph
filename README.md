@@ -1,5 +1,3 @@
-**Dora Boateng Graph Service**
-
 # Local development
 
 ```shell
