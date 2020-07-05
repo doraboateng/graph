@@ -14,7 +14,7 @@ jobs:
       with:
         repository: doraboateng/graph
         username: dorabot
-        password: ${{ secrets.DOCKER_TOKEN }}
+        password: ${{ secrets.BOATENG_DOCKER_TOKEN }}
         tag_with_ref: true
         tags: latest
         target: prod
