@@ -6,9 +6,8 @@
 *.dylib
 *.test
 
-# Docker Hub
-.docker-hub-token
-.docker-hub-username
+# Credentials
+.credentials/
 
 # Environment files
 .env

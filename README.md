@@ -1,31 +1,10 @@
-# Local development
-
-```shell
-# Build for local development.
-docker build --tag doraboateng/graph:dev --target dev .
-```
-
-<details>
-    <summary>Rebuilding the schema</summary>
-
-```shell
-# TODO ...
-
-./run shell
-
-curl alpha:8080/alter -d '{ "drop_all": true }'
-curl alpha:8080/admin/schema --data-binary "@schema/graph.gql"
-curl alpha:8080/alter --data-binary "@schema/indices.dgraph"
-```
-</details>
+_Dora Boateng Graph_
 
 # Releasing a new version
 
 - Make sure the `stable` branch contains all the latest working changes.
-- Create release on [Github](https://github.com/kwcay/boateng-graph/releases/new?target=stable) using [calendar versioning](https://calver.org) (e.g. v20.01.0).
-    - See [latest releases](https://github.com/kwcay/boateng-graph/releases) for guidance.
-
-A new release will be published to [Docker Hub](https://hub.docker.com/r/doraboateng/graph/tags?page=1).
+- Create release on [Github](https://github.com/doraboateng/graph/releases/new?target=stable) using [calendar versioning](https://calver.org) (e.g. v20.01.0).
+    - See [latest releases](https://github.com/doraboateng/graph/releases) for guidance.
 
 # Other notes
 
@@ -78,8 +57,39 @@ exit
 ```
 </details>
 
+<details>
+    <summary>Loading data into Slash GraphQL</summary>
+
+```shell
+# OPTIONAL: Drop data.
+curl "$(cat ./.credentials/slash-graphql-endpoint)/admin/slash" \
+    --header "Content-Type: application/graphql" \
+    --header "X-Auth-Token: $(cat ./.credentials/slash-graphql-key)" \
+    --data-binary "mutation { dropData(allData: true) { response { code message } } }"
+
+# OPTIONAL: Drop data and schema.
+curl "$(cat ./.credentials/slash-graphql-endpoint)/admin/slash" \
+    --header "Content-Type: application/graphql" \
+    --header "X-Auth-Token: $(cat ./.credentials/slash-graphql-key)" \
+    --data-binary "mutation { dropData(allDataAndSchema: true) { response { code message } } }"
+
+# Load GraphQL schema.
+npx slash-graphql update-schema \
+    --endpoint $(cat ./.credentials/slash-graphql-endpoint)/graphql \
+    --token $(cat ./.credentials/slash-graphql-key) \
+    src/schema/graph.gql
+
+# Load Dgraph schema.
+curl "$(cat ./.credentials/slash-graphql-endpoint)/alter" \
+    --header "X-Auth-Token: $(cat ./.credentials/slash-graphql-key)" \
+    --data-binary '@src/schema/indices.dgraph'
+
+# TODO: load data...
+```
+</details>
+
 # License
 
-[GNU General Public License v3](https://github.com/kwcay/boateng-graph-service/blob/stable/LICENSE)
+[GNU General Public License v3](LICENSE)
 
 Copyright © Kwahu & Cayes
