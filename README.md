@@ -9,6 +9,59 @@ _Dora Boateng Graph_
 # Other notes
 
 <details>
+    <summary>Loading data into Slash GraphQL</summary>
+
+```shell
+# OPTIONAL: Drop data.
+curl "$(cat ./.credentials/slash-graphql-http-endpoint)/admin/slash" \
+    --header "Content-Type: application/graphql" \
+    --header "X-Auth-Token: $(cat ./.credentials/slash-graphql-key)" \
+    --data-binary "mutation { dropData(allData: true) { response { code message } } }"
+
+# OPTIONAL: Drop data and schema.
+curl "$(cat ./.credentials/slash-graphql-http-endpoint)/admin/slash" \
+    --header "Content-Type: application/graphql" \
+    --header "X-Auth-Token: $(cat ./.credentials/slash-graphql-key)" \
+    --data-binary "mutation { dropData(allDataAndSchema: true) { response { code message } } }"
+
+# Load GraphQL schema.
+# NOTE: this command requires Node v14 or later.
+npx slash-graphql update-schema \
+    --endpoint $(cat ./.credentials/slash-graphql-http-endpoint)/graphql \
+    --token $(cat ./.credentials/slash-graphql-key) \
+    src/schema/graph.gql
+
+# Load Dgraph schema.
+curl "$(cat ./.credentials/slash-graphql-http-endpoint)/alter" \
+    --header "X-Auth-Token: $(cat ./.credentials/slash-graphql-key)" \
+    --data-binary '@src/schema/indices.dgraph'
+
+# Copy backup files into "tmp" folder.
+mkdir -p tmp/data && cp <PATH TO RDF FILE> tmp/data/rdf.tar.gz
+mkdir -p tmp/data/$(date +'%Y-%m-%d') \
+    && mv tmp/data/rdf.tar.gz tmp/data/$(date +'%Y-%m-%d')/ \
+    && cd tmp/data/$(date +'%Y-%m-%d') \
+    && tar --extract --gzip --file rdf.tar.gz \
+    && cp -R export/**/* . \
+    && rm -rf export dgraph* \
+    && cd ../../..
+
+# Import data using the Live Loader.
+docker run \
+    --env-file .env \
+    --interactive \
+    --rm \
+    --tty \
+    --volume "$(pwd)/tmp/data/$(date +'%Y-%m-%d')/g01.rdf.gz/:/tmp/data.rdf.gz" \
+    dgraph/dgraph:v20.11-slash \
+    bash -c 'dgraph live \
+        --auth_token "$SLASH_GRAPHQL_AUTH_TOKEN" \
+        --files /tmp/data.rdf.gz \
+        --slash_grpc_endpoint="${SLASH_GRAPHQL_GRPC_ENDPOINT}:443"'
+```
+</details>
+
+<details>
     <summary>Loading data into production</summary>
 
 ```shell
@@ -54,37 +107,6 @@ docker run \
         --zero zero:5080
 
 exit
-```
-</details>
-
-<details>
-    <summary>Loading data into Slash GraphQL</summary>
-
-```shell
-# OPTIONAL: Drop data.
-curl "$(cat ./.credentials/slash-graphql-endpoint)/admin/slash" \
-    --header "Content-Type: application/graphql" \
-    --header "X-Auth-Token: $(cat ./.credentials/slash-graphql-key)" \
-    --data-binary "mutation { dropData(allData: true) { response { code message } } }"
-
-# OPTIONAL: Drop data and schema.
-curl "$(cat ./.credentials/slash-graphql-endpoint)/admin/slash" \
-    --header "Content-Type: application/graphql" \
-    --header "X-Auth-Token: $(cat ./.credentials/slash-graphql-key)" \
-    --data-binary "mutation { dropData(allDataAndSchema: true) { response { code message } } }"
-
-# Load GraphQL schema.
-npx slash-graphql update-schema \
-    --endpoint $(cat ./.credentials/slash-graphql-endpoint)/graphql \
-    --token $(cat ./.credentials/slash-graphql-key) \
-    src/schema/graph.gql
-
-# Load Dgraph schema.
-curl "$(cat ./.credentials/slash-graphql-endpoint)/alter" \
-    --header "X-Auth-Token: $(cat ./.credentials/slash-graphql-key)" \
-    --data-binary '@src/schema/indices.dgraph'
-
-# TODO: load data...
 ```
 </details>
 
