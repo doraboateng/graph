@@ -5,12 +5,6 @@ enum ExpressionType {
   Word
 }
 
-enum StoryType {
-  Poem
-  Song
-  Story
-}
-
 enum NounType {
   Name
   Place
@@ -48,9 +42,15 @@ enum ReferenceType {
   Other
 }
 
+enum StoryType {
+  Poem
+  Song
+  Story
+}
+
 type Alphabet {
   code: String! @id
-  name: String!
+  names: [Transliteration!]!
   script: Script
   characters: String
   # languages: [Language]
@@ -59,7 +59,7 @@ type Alphabet {
 
 type Culture {
   endonym: String! # Name as defined by the people of the culture.
-  exonym: [String!]! # Names used by foreigners.
+  exonyms: [Transliteration!]! # Names used by foreigners.
 }
 
 type Expression {
@@ -70,9 +70,9 @@ type Expression {
   partOfSpeech: PartOfSpeech
   nounType: NounType
   lexeme: Expression # When the lexeme references itself, we have a lemma.
-  literalTranslation: String @search(by: [fulltext])
-  practicalTranslation: String @search(by: [fulltext])
-  meaning: String @search(by: [fulltext])
+  literalTranslations: [Transliteration!]!
+  practicalTranslations: [Transliteration!]!
+  meanings: [Transliteration!]!
   tags: [Tag]
   relatedExpressions: [Expression] # Synonyms, antonyms, compound words maybe.
   references: [Reference]
